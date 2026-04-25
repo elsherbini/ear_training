@@ -54,33 +54,39 @@ vi.mock('tone', () => {
 	});
 
 	return {
-		AMSynth: vi.fn().mockImplementation(() => createMockSynth()),
-		FMSynth: vi.fn().mockImplementation(() => createMockSynth()),
-		LFO: vi.fn().mockImplementation(() => createMockLFO()),
-		Gain: vi.fn().mockImplementation(() => createMockGain()),
-		Compressor: vi.fn().mockImplementation(() => ({
-			connect: mockConnect,
-			chain: mockChain,
-			dispose: mockDispose,
-			threshold: createMockParam(-24),
-			ratio: createMockParam(12),
-		})),
-		FeedbackDelay: vi.fn().mockImplementation(() => ({
-			connect: mockConnect,
-			chain: mockChain,
-			dispose: mockDispose,
-			delayTime: createMockParam(0.3),
-			feedback: createMockParam(0.3),
-			wet: createMockSignal(0.2),
-		})),
-		Reverb: vi.fn().mockImplementation(() => ({
-			connect: mockConnect,
-			chain: mockChain,
-			toDestination: vi.fn().mockReturnThis(),
-			dispose: mockDispose,
-			decay: 4,
-			wet: createMockSignal(0.4),
-		})),
+		AMSynth: vi.fn().mockImplementation(function () { return createMockSynth(); }),
+		FMSynth: vi.fn().mockImplementation(function () { return createMockSynth(); }),
+		LFO: vi.fn().mockImplementation(function () { return createMockLFO(); }),
+		Gain: vi.fn().mockImplementation(function () { return createMockGain(); }),
+		Compressor: vi.fn().mockImplementation(function () {
+			return {
+				connect: mockConnect,
+				chain: mockChain,
+				dispose: mockDispose,
+				threshold: createMockParam(-24),
+				ratio: createMockParam(12),
+			};
+		}),
+		FeedbackDelay: vi.fn().mockImplementation(function () {
+			return {
+				connect: mockConnect,
+				chain: mockChain,
+				dispose: mockDispose,
+				delayTime: createMockParam(0.3),
+				feedback: createMockParam(0.3),
+				wet: createMockSignal(0.2),
+			};
+		}),
+		Reverb: vi.fn().mockImplementation(function () {
+			return {
+				connect: mockConnect,
+				chain: mockChain,
+				toDestination: vi.fn().mockReturnThis(),
+				dispose: mockDispose,
+				decay: 4,
+				wet: createMockSignal(0.4),
+			};
+		}),
 		getDestination: vi.fn().mockReturnValue({
 			connect: mockConnect,
 		}),
@@ -94,6 +100,19 @@ describe('DroneEngine', () => {
 	it('constructs with default params', () => {
 		const engine = new DroneEngine();
 		expect(engine).toBeDefined();
+	});
+
+	it('creates correct number of voices based on numOctaves', () => {
+		const engine = new DroneEngine({ numOctaves: 3 });
+		engine.buildGraph();
+		// 3 octaves = 3 AM + 3 FM = 6 voices
+		expect(engine.voiceCount).toBe(6);
+	});
+
+	it('creates 8 voices with default 4 octaves', () => {
+		const engine = new DroneEngine();
+		engine.buildGraph();
+		expect(engine.voiceCount).toBe(8);
 	});
 
 	it('constructs with custom params', () => {

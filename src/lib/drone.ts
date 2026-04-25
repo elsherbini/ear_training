@@ -65,7 +65,7 @@ export const DEFAULT_PARAMS: DroneParams = {
 
 const META_LFO_RATE = 0.02;
 
-interface Voice {
+export interface Voice {
 	synth: Tone.AMSynth | Tone.FMSynth;
 	gain: Tone.Gain;
 	lfo: Tone.LFO;
@@ -224,5 +224,64 @@ export class DroneEngine {
 		this.delay = null;
 		this.compressor = null;
 		this.masterGain = null;
+	}
+
+	getAllVoices(): Voice[] {
+		return [...this.amVoices, ...this.fmVoices];
+	}
+
+	async start(): Promise<void> {
+		if (this._playing) return;
+		await Tone.start();
+
+		if (this.voiceCount === 0) {
+			this.buildGraph();
+		}
+
+		const octaves = this.getOctaves();
+		const { key } = this.params;
+
+		// Start all LFOs
+		this.getAllVoices().forEach((v) => {
+			v.lfo.start();
+			v.metaLfoRate.start();
+			v.metaLfoDepth.start();
+		});
+
+		// Trigger all synths
+		this.amVoices.forEach((v, i) => {
+			v.synth.triggerAttack(`${key}${octaves[i]}`);
+		});
+		this.fmVoices.forEach((v, i) => {
+			v.synth.triggerAttack(`${key}${octaves[i]}`);
+		});
+
+		this._playing = true;
+	}
+
+	stop(): void {
+		if (!this._playing) return;
+
+		this.getAllVoices().forEach((v) => {
+			v.synth.triggerRelease();
+			v.lfo.stop();
+			v.metaLfoRate.stop();
+			v.metaLfoDepth.stop();
+		});
+
+		this._playing = false;
+	}
+
+	setKey(key: string): void {
+		this.params.key = key;
+		if (!this._playing) return;
+
+		const octaves = this.getOctaves();
+		this.amVoices.forEach((v, i) => {
+			v.synth.frequency.rampTo(Tone.Frequency(`${key}${octaves[i]}`).toFrequency(), 0.5);
+		});
+		this.fmVoices.forEach((v, i) => {
+			v.synth.frequency.rampTo(Tone.Frequency(`${key}${octaves[i]}`).toFrequency(), 0.5);
+		});
 	}
 }

@@ -90,6 +90,9 @@ vi.mock('tone', () => {
 		getDestination: vi.fn().mockReturnValue({
 			connect: mockConnect,
 		}),
+		Frequency: vi.fn().mockImplementation((note: string) => ({
+			toFrequency: vi.fn().mockReturnValue(440),
+		})),
 		start: vi.fn().mockResolvedValue(undefined),
 	};
 });
@@ -113,6 +116,27 @@ describe('DroneEngine', () => {
 		const engine = new DroneEngine();
 		engine.buildGraph();
 		expect(engine.voiceCount).toBe(8);
+	});
+
+	it('starts and stops the drone', async () => {
+		const engine = new DroneEngine();
+		engine.buildGraph();
+		await engine.start();
+		expect(engine.playing).toBe(true);
+		engine.stop();
+		expect(engine.playing).toBe(false);
+	});
+
+	it('changes key with frequency ramp', async () => {
+		const engine = new DroneEngine({ key: 'C' });
+		engine.buildGraph();
+		await engine.start();
+		engine.setKey('D');
+		// Verify synths had rampTo called on frequency
+		const voices = engine.getAllVoices();
+		voices.forEach((v) => {
+			expect(v.synth.frequency.rampTo).toHaveBeenCalled();
+		});
 	});
 
 	it('constructs with custom params', () => {

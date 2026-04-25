@@ -4,8 +4,9 @@
 
 	const KEYS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
-	let engine: DroneEngine | null = $state(null);
+	const engine = new DroneEngine();
 	let playing = $state(false);
+	let graphBuilt = $state(false);
 
 	// Top bar
 	let key = $state(DEFAULT_PARAMS.key);
@@ -53,45 +54,45 @@
 		return labels;
 	});
 
-	function getEngine(): DroneEngine {
-		if (!engine) {
-			engine = new DroneEngine();
+	function ensureGraph() {
+		if (!graphBuilt) {
+			engine.buildGraph();
+			graphBuilt = true;
 		}
-		return engine;
 	}
 
 	async function togglePlay() {
-		const e = getEngine();
 		if (playing) {
-			e.stop();
+			engine.stop();
 			playing = false;
 		} else {
-			e.buildGraph();
-			await e.start();
+			ensureGraph();
+			await engine.start();
 			playing = true;
 		}
 	}
 
 	function handleKeyChange(newKey: string) {
 		key = newKey;
-		engine?.setKey(newKey);
+		engine.setKey(newKey);
 	}
 
 	function handleOctaveChange() {
-		// Resize voiceGains array
 		const total = numOctaves * 2;
 		while (voiceGains.length < total) voiceGains.push(1);
 		voiceGains = voiceGains.slice(0, total);
-		engine?.setOctaveRange(startOctave, numOctaves);
+		engine.setOctaveRange(startOctave, numOctaves);
+		graphBuilt = true; // setOctaveRange rebuilds the graph internally
 	}
 
-	// Reactive updates: push UI state to engine when values change
+	// Reactive updates: push UI state to engine when values change.
+	// Engine is always non-null, so these always run and always apply.
 	$effect(() => {
-		engine?.setMasterVolume(masterVolume);
+		engine.setMasterVolume(masterVolume);
 	});
 
 	$effect(() => {
-		engine?.updateAmParams({
+		engine.updateAmParams({
 			harmonicity: amHarmonicity,
 			modulationIndex: amModIndex,
 			lfoRate: amLfoRate,
@@ -102,7 +103,7 @@
 	});
 
 	$effect(() => {
-		engine?.updateFmParams({
+		engine.updateFmParams({
 			harmonicity: fmHarmonicity,
 			modulationIndex: fmModIndex,
 			lfoRate: fmLfoRate,
@@ -113,23 +114,23 @@
 	});
 
 	$effect(() => {
-		engine?.updateEffects({
+		engine.updateEffects({
 			compressorThreshold: compThreshold,
 			compressorRatio: compRatio,
-			delayTime: delayTime,
-			delayFeedback: delayFeedback,
-			delayWet: delayWet,
-			reverbDecay: reverbDecay,
-			reverbWet: reverbWet,
+			delayTime,
+			delayFeedback,
+			delayWet,
+			reverbDecay,
+			reverbWet,
 		});
 	});
 
 	$effect(() => {
-		voiceGains.forEach((g, i) => engine?.setVoiceGain(i, g));
+		voiceGains.forEach((g, i) => engine.setVoiceGain(i, g));
 	});
 
 	onDestroy(() => {
-		engine?.dispose();
+		engine.dispose();
 	});
 </script>
 

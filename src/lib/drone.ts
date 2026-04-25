@@ -284,4 +284,90 @@ export class DroneEngine {
 			v.synth.frequency.rampTo(Tone.Frequency(`${key}${octaves[i]}`).toFrequency(), 0.5);
 		});
 	}
+
+	getParams(): DroneParams {
+		return { ...this.params };
+	}
+
+	setMasterVolume(value: number): void {
+		this.params.masterVolume = value;
+		this.masterGain?.gain.rampTo(value, 0.1);
+	}
+
+	setVoiceGain(index: number, value: number): void {
+		this.params.voiceGains[index] = value;
+		const voices = this.getAllVoices();
+		if (voices[index]) {
+			voices[index].gain.gain.rampTo(value, 0.1);
+		}
+	}
+
+	updateAmParams(partial: Partial<SynthGroupParams>): void {
+		Object.assign(this.params.am, partial);
+		this.applySynthGroupParams('am');
+	}
+
+	updateFmParams(partial: Partial<SynthGroupParams>): void {
+		Object.assign(this.params.fm, partial);
+		this.applySynthGroupParams('fm');
+	}
+
+	private applySynthGroupParams(type: 'am' | 'fm'): void {
+		const voices = type === 'am' ? this.amVoices : this.fmVoices;
+		const groupParams = type === 'am' ? this.params.am : this.params.fm;
+		const rates = computeSpreadRates(groupParams.lfoRate, groupParams.lfoSpread, voices.length);
+
+		voices.forEach((v, i) => {
+			// Update synth params
+			v.synth.set({ harmonicity: groupParams.harmonicity });
+			if ('modulationIndex' in v.synth) {
+				(v.synth as Tone.FMSynth).set({ modulationIndex: groupParams.modulationIndex });
+			}
+
+			// Update LFO
+			v.lfo.frequency.rampTo(rates[i], 0.5);
+			v.lfo.min = 1 - groupParams.lfoDepth;
+
+			// Update meta-LFO drift
+			const driftRange = rates[i] * groupParams.driftAmount;
+			v.metaLfoRate.min = rates[i] - driftRange;
+			v.metaLfoRate.max = rates[i] + driftRange;
+			v.metaLfoDepth.min = Math.max(0, groupParams.lfoDepth - groupParams.driftAmount * 0.3);
+			v.metaLfoDepth.max = Math.min(1, groupParams.lfoDepth + groupParams.driftAmount * 0.3);
+		});
+	}
+
+	updateEffects(partial: Partial<EffectsParams>): void {
+		Object.assign(this.params.effects, partial);
+		const e = this.params.effects;
+		this.compressor?.threshold.rampTo(e.compressorThreshold, 0.1);
+		this.compressor?.ratio.rampTo(e.compressorRatio, 0.1);
+		this.delay?.delayTime.rampTo(e.delayTime, 0.1);
+		this.delay?.feedback.rampTo(e.delayFeedback, 0.1);
+		this.delay?.wet.rampTo(e.delayWet, 0.1);
+		if (this.reverb) {
+			this.reverb.decay = e.reverbDecay;
+			this.reverb.wet.rampTo(e.reverbWet, 0.1);
+		}
+	}
+
+	setOctaveRange(startOctave: number, numOctaves: number): void {
+		const wasPlaying = this._playing;
+		if (wasPlaying) this.stop();
+		this.params.startOctave = startOctave;
+		this.params.numOctaves = numOctaves;
+		// Ensure voiceGains array is correct length
+		const totalVoices = numOctaves * 2;
+		while (this.params.voiceGains.length < totalVoices) {
+			this.params.voiceGains.push(1);
+		}
+		this.params.voiceGains = this.params.voiceGains.slice(0, totalVoices);
+		this.buildGraph();
+		if (wasPlaying) this.start();
+	}
+
+	dispose(): void {
+		this.stop();
+		this.disposeGraph();
+	}
 }

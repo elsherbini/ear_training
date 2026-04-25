@@ -139,6 +139,50 @@ describe('DroneEngine', () => {
 		});
 	});
 
+	it('updates master volume', () => {
+		const engine = new DroneEngine();
+		engine.buildGraph();
+		engine.setMasterVolume(0.8);
+		expect(engine.getParams().masterVolume).toBe(0.8);
+	});
+
+	it('updates voice gain', () => {
+		const engine = new DroneEngine();
+		engine.buildGraph();
+		engine.setVoiceGain(0, 0.5);
+		expect(engine.getParams().voiceGains[0]).toBe(0.5);
+	});
+
+	it('updates AM synth group params', () => {
+		const engine = new DroneEngine();
+		engine.buildGraph();
+		engine.updateAmParams({ harmonicity: 3 });
+		expect(engine.getParams().am.harmonicity).toBe(3);
+	});
+
+	it('updates FM synth group params', () => {
+		const engine = new DroneEngine();
+		engine.buildGraph();
+		engine.updateFmParams({ lfoRate: 0.5 });
+		expect(engine.getParams().fm.lfoRate).toBe(0.5);
+	});
+
+	it('updates effects params', () => {
+		const engine = new DroneEngine();
+		engine.buildGraph();
+		engine.updateEffects({ reverbDecay: 6 });
+		expect(engine.getParams().effects.reverbDecay).toBe(6);
+	});
+
+	it('updates octave range and rebuilds', () => {
+		const engine = new DroneEngine();
+		engine.buildGraph();
+		engine.setOctaveRange(3, 2);
+		expect(engine.voiceCount).toBe(4);
+		expect(engine.getParams().startOctave).toBe(3);
+		expect(engine.getParams().numOctaves).toBe(2);
+	});
+
 	it('constructs with custom params', () => {
 		const params: DroneParams = {
 			key: 'D',

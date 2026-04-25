@@ -78,7 +78,7 @@ export interface Voice {
  * At spread=0 all voices get baseRate.
  * At spread=1 voices span from baseRate*0.5 to baseRate*1.5.
  */
-function computeSpreadRates(baseRate: number, spread: number, count: number): number[] {
+export function computeSpreadRates(baseRate: number, spread: number, count: number): number[] {
 	if (count === 1) return [baseRate];
 	return Array.from({ length: count }, (_, i) => {
 		return baseRate * (1 - spread / 2) + (spread * baseRate * i) / (count - 1);

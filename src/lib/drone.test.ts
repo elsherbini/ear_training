@@ -97,7 +97,7 @@ vi.mock('tone', () => {
 	};
 });
 
-import { DroneEngine, type DroneParams } from './drone';
+import { DroneEngine, computeSpreadRates, type DroneParams } from './drone';
 
 describe('DroneEngine', () => {
 	it('constructs with default params', () => {
@@ -218,5 +218,29 @@ describe('DroneEngine', () => {
 		};
 		const engine = new DroneEngine(params);
 		expect(engine).toBeDefined();
+	});
+});
+
+describe('computeSpreadRates', () => {
+	it('returns all same rate when spread is 0', () => {
+		const rates = computeSpreadRates(0.1, 0, 4);
+		expect(rates).toEqual([0.1, 0.1, 0.1, 0.1]);
+	});
+
+	it('spreads rates from 0.5x to 1.5x when spread is 1', () => {
+		const rates = computeSpreadRates(0.1, 1, 4);
+		expect(rates[0]).toBeCloseTo(0.05);
+		expect(rates[3]).toBeCloseTo(0.15);
+	});
+
+	it('handles single voice', () => {
+		const rates = computeSpreadRates(0.1, 0.5, 1);
+		expect(rates).toEqual([0.1]);
+	});
+
+	it('spreads symmetrically around base rate at moderate spread', () => {
+		const rates = computeSpreadRates(0.1, 0.5, 4);
+		const avg = rates.reduce((a, b) => a + b, 0) / rates.length;
+		expect(avg).toBeCloseTo(0.1, 2);
 	});
 });

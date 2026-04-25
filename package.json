@@ -25,6 +25,7 @@
 	},
 	"dependencies": {
 		"@strudel/web": "^1.3.0",
-		"abcjs": "file:../diminished_staff/abcjs"
+		"abcjs": "file:../diminished_staff/abcjs",
+		"tone": "^15.1.22"
 	}
 }

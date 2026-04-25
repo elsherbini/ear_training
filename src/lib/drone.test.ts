@@ -1,0 +1,135 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Mock Tone.js - it requires AudioContext which isn't available in Node
+vi.mock('tone', () => {
+	const mockConnect = vi.fn().mockReturnThis();
+	const mockChain = vi.fn().mockReturnThis();
+	const mockStart = vi.fn().mockReturnThis();
+	const mockStop = vi.fn().mockReturnThis();
+	const mockDispose = vi.fn();
+	const mockTriggerAttack = vi.fn().mockReturnThis();
+	const mockTriggerRelease = vi.fn().mockReturnThis();
+	const mockRampTo = vi.fn().mockReturnThis();
+
+	const createMockParam = (value: number = 0) => ({
+		value,
+		rampTo: mockRampTo,
+		setValueAtTime: vi.fn(),
+	});
+
+	const createMockSignal = (value: number = 0) => ({
+		value,
+		rampTo: mockRampTo,
+	});
+
+	const createMockSynth = () => ({
+		connect: mockConnect,
+		chain: mockChain,
+		triggerAttack: mockTriggerAttack,
+		triggerRelease: mockTriggerRelease,
+		dispose: mockDispose,
+		frequency: createMockSignal(440),
+		volume: createMockParam(0),
+		set: vi.fn(),
+	});
+
+	const createMockLFO = () => ({
+		connect: mockConnect,
+		start: mockStart,
+		stop: mockStop,
+		dispose: mockDispose,
+		frequency: createMockSignal(1),
+		amplitude: createMockParam(1),
+		min: 0,
+		max: 1,
+		type: 'sine' as const,
+		set: vi.fn(),
+	});
+
+	const createMockGain = () => ({
+		connect: mockConnect,
+		chain: mockChain,
+		dispose: mockDispose,
+		gain: createMockParam(1),
+	});
+
+	return {
+		AMSynth: vi.fn().mockImplementation(() => createMockSynth()),
+		FMSynth: vi.fn().mockImplementation(() => createMockSynth()),
+		LFO: vi.fn().mockImplementation(() => createMockLFO()),
+		Gain: vi.fn().mockImplementation(() => createMockGain()),
+		Compressor: vi.fn().mockImplementation(() => ({
+			connect: mockConnect,
+			chain: mockChain,
+			dispose: mockDispose,
+			threshold: createMockParam(-24),
+			ratio: createMockParam(12),
+		})),
+		FeedbackDelay: vi.fn().mockImplementation(() => ({
+			connect: mockConnect,
+			chain: mockChain,
+			dispose: mockDispose,
+			delayTime: createMockParam(0.3),
+			feedback: createMockParam(0.3),
+			wet: createMockSignal(0.2),
+		})),
+		Reverb: vi.fn().mockImplementation(() => ({
+			connect: mockConnect,
+			chain: mockChain,
+			toDestination: vi.fn().mockReturnThis(),
+			dispose: mockDispose,
+			decay: 4,
+			wet: createMockSignal(0.4),
+		})),
+		getDestination: vi.fn().mockReturnValue({
+			connect: mockConnect,
+		}),
+		start: vi.fn().mockResolvedValue(undefined),
+	};
+});
+
+import { DroneEngine, type DroneParams } from './drone';
+
+describe('DroneEngine', () => {
+	it('constructs with default params', () => {
+		const engine = new DroneEngine();
+		expect(engine).toBeDefined();
+	});
+
+	it('constructs with custom params', () => {
+		const params: DroneParams = {
+			key: 'D',
+			startOctave: 3,
+			numOctaves: 3,
+			masterVolume: 0.7,
+			am: {
+				harmonicity: 2,
+				modulationIndex: 5,
+				lfoRate: 0.2,
+				lfoDepth: 0.6,
+				lfoSpread: 0.3,
+				driftAmount: 0.4,
+			},
+			fm: {
+				harmonicity: 3,
+				modulationIndex: 8,
+				lfoRate: 0.15,
+				lfoDepth: 0.5,
+				lfoSpread: 0.5,
+				driftAmount: 0.6,
+			},
+			voiceGains: [1, 1, 1, 1, 1, 1, 1, 1],
+			effects: {
+				compressorThreshold: -20,
+				compressorRatio: 4,
+				delayTime: 0.3,
+				delayFeedback: 0.3,
+				delayWet: 0.2,
+				reverbDecay: 4,
+				reverbWet: 0.4,
+			},
+		};
+		const engine = new DroneEngine(params);
+		expect(engine).toBeDefined();
+	});
+});

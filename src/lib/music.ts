@@ -93,14 +93,43 @@ export function matchPreset(enabledSemitones: number[]): string {
 export function pickRandomTarget(
 	tonic: NoteName,
 	enabledSemitones: number[],
+	lastPick?: { note: NoteName; octave: number },
+	recentHistory?: { note: NoteName; octave: number }[],
 ): { note: NoteName; octave: number } {
 	if (enabledSemitones.length === 0) {
 		return { note: tonic, octave: 3 };
 	}
-	const semitones = enabledSemitones[Math.floor(Math.random() * enabledSemitones.length)];
-	const note = noteFromInterval(tonic, semitones);
-	const octave = Math.random() < 0.5 ? 2 : 3;
-	return { note, octave };
+
+	// Build all candidates: each semitone × each octave
+	const candidates: { note: NoteName; octave: number }[] = [];
+	for (const semitone of enabledSemitones) {
+		const note = noteFromInterval(tonic, semitone);
+		candidates.push({ note, octave: 2 });
+		candidates.push({ note, octave: 3 });
+	}
+
+	// Remove last pick to prevent back-to-back repeat
+	const filtered = lastPick
+		? candidates.filter((c) => !(c.note === lastPick.note && c.octave === lastPick.octave))
+		: candidates;
+
+	const pool = filtered.length > 0 ? filtered : candidates;
+
+	// Weight: 2 for notes not in recent history, 1 for notes in recent history
+	const history = recentHistory ?? [];
+	const weights = pool.map((c) => {
+		const inRecent = history.some((h) => h.note === c.note && h.octave === c.octave);
+		return inRecent ? 1 : 2;
+	});
+
+	// Weighted random selection
+	const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+	let roll = Math.random() * totalWeight;
+	for (let i = 0; i < pool.length; i++) {
+		roll -= weights[i];
+		if (roll <= 0) return pool[i];
+	}
+	return pool[pool.length - 1];
 }
 
 export interface MelodyNote {

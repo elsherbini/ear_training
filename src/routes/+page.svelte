@@ -323,78 +323,156 @@
 		onAccidentalModeChange={handleAccidentalModeChange}
 	/>
 
-	<!-- Large screens: buttons left of circle in grid -->
-	<div class="mt-6 hidden md:grid grid-cols-12 items-center">
-		<div class="col-span-1"></div>
-
-		<div class="col-span-2 flex flex-col items-end gap-3">
-			<button
-				onclick={togglePlay}
-				class="w-14 h-14 rounded-full font-bold text-sm {playing
-					? 'bg-red-600 hover:bg-red-700'
-					: 'bg-green-600 hover:bg-green-700'}"
-			>
-				{playing ? 'Stop' : 'Start'}
-			</button>
-			<button
-				onclick={handleReplay}
-				disabled={!playing}
-				class="w-14 h-14 rounded-full text-sm {playing
-					? 'bg-gray-700 hover:bg-gray-600'
-					: 'bg-gray-800 text-gray-600 cursor-not-allowed'}"
-				title="Replay target note"
-			>
-				Replay
-			</button>
-			<button
-				onclick={() => handleQuizModeChange(quizMode === 'interval' ? 'melody' : 'interval')}
-				class="w-14 h-14 rounded-full text-xs bg-gray-700 hover:bg-gray-600 leading-tight"
-			>
-				<span class={quizMode === 'interval' ? 'font-bold' : 'text-gray-400'}>Note</span><br />
-				<span class={quizMode === 'melody' ? 'font-bold' : 'text-gray-400'}>Melody</span>
-			</button>
-			<button
-				onclick={() => (showStats = !showStats)}
-				class="w-14 h-14 rounded-full text-sm {showStats
-					? 'bg-blue-600 hover:bg-blue-700'
-					: 'bg-gray-700 hover:bg-gray-600'}"
-			>
-				Stats
-			</button>
-			{#if showStats}
+	<!-- Large screens: conditional layout based on mode -->
+	<div class="mt-6 hidden md:block">
+		{#if layoutMode === 'piano'}
+			<!-- Piano mode: wide layout, buttons below -->
+			<div class="grid grid-cols-12">
+				<div class="col-span-1"></div>
+				<div class="col-span-10">
+					<NoteLayout
+						{layoutMode}
+						notes={circleNotes}
+						{tonic}
+						{nameMode}
+						{showIntervals}
+						{showStats}
+						stats={keyStats}
+						{enabledSemitones}
+						{userPick}
+						{correctNote}
+						{cadenceNote}
+						{melodyDots}
+						{accidentalMode}
+						{preset}
+						{targetPitch}
+						onNoteClick={handleNoteClick}
+						onLayoutChange={handleLayoutChange}
+					/>
+				</div>
+				<div class="col-span-1"></div>
+			</div>
+			<div class="mt-4 flex justify-center gap-3">
 				<button
-					onclick={() => {
-						allStats = clearStatsForKey(allStats, tonic);
-					}}
-					class="w-14 h-14 rounded-full text-xs bg-gray-700 hover:bg-gray-600"
+					onclick={togglePlay}
+					class="w-14 h-14 rounded-full font-bold text-sm {playing
+						? 'bg-red-600 hover:bg-red-700'
+						: 'bg-green-600 hover:bg-green-700'}"
 				>
-					Clear
+					{playing ? 'Stop' : 'Start'}
 				</button>
-			{/if}
-		</div>
+				<button
+					onclick={handleReplay}
+					disabled={!playing}
+					class="w-14 h-14 rounded-full text-sm {playing
+						? 'bg-gray-700 hover:bg-gray-600'
+						: 'bg-gray-800 text-gray-600 cursor-not-allowed'}"
+					title="Replay target note"
+				>
+					Replay
+				</button>
+				<button
+					onclick={() => handleQuizModeChange(quizMode === 'interval' ? 'melody' : 'interval')}
+					class="w-14 h-14 rounded-full text-xs bg-gray-700 hover:bg-gray-600 leading-tight"
+				>
+					<span class={quizMode === 'interval' ? 'font-bold' : 'text-gray-400'}>Note</span><br />
+					<span class={quizMode === 'melody' ? 'font-bold' : 'text-gray-400'}>Melody</span>
+				</button>
+				<button
+					onclick={() => (showStats = !showStats)}
+					class="w-14 h-14 rounded-full text-sm {showStats
+						? 'bg-blue-600 hover:bg-blue-700'
+						: 'bg-gray-700 hover:bg-gray-600'}"
+				>
+					Stats
+				</button>
+				{#if showStats}
+					<button
+						onclick={() => {
+							allStats = clearStatsForKey(allStats, tonic);
+						}}
+						class="w-14 h-14 rounded-full text-xs bg-gray-700 hover:bg-gray-600"
+					>
+						Clear
+					</button>
+				{/if}
+			</div>
+		{:else}
+			<!-- Circle modes: original grid layout with buttons on the left -->
+			<div class="grid grid-cols-12 items-center">
+				<div class="col-span-1"></div>
 
-		<div class="col-span-6">
-			<NoteLayout
-				{layoutMode}
-				notes={circleNotes}
-				{tonic}
-				{nameMode}
-				{showIntervals}
-				{showStats}
-				stats={keyStats}
-				{enabledSemitones}
-				{userPick}
-				{correctNote}
-				{cadenceNote}
-				{melodyDots}
-				{accidentalMode}
-				{preset}
-				onNoteClick={handleNoteClick}
-				onLayoutChange={handleLayoutChange}
-			/>
-		</div>
+				<div class="col-span-2 flex flex-col items-end gap-3">
+					<button
+						onclick={togglePlay}
+						class="w-14 h-14 rounded-full font-bold text-sm {playing
+							? 'bg-red-600 hover:bg-red-700'
+							: 'bg-green-600 hover:bg-green-700'}"
+					>
+						{playing ? 'Stop' : 'Start'}
+					</button>
+					<button
+						onclick={handleReplay}
+						disabled={!playing}
+						class="w-14 h-14 rounded-full text-sm {playing
+							? 'bg-gray-700 hover:bg-gray-600'
+							: 'bg-gray-800 text-gray-600 cursor-not-allowed'}"
+						title="Replay target note"
+					>
+						Replay
+					</button>
+					<button
+						onclick={() => handleQuizModeChange(quizMode === 'interval' ? 'melody' : 'interval')}
+						class="w-14 h-14 rounded-full text-xs bg-gray-700 hover:bg-gray-600 leading-tight"
+					>
+						<span class={quizMode === 'interval' ? 'font-bold' : 'text-gray-400'}>Note</span><br />
+						<span class={quizMode === 'melody' ? 'font-bold' : 'text-gray-400'}>Melody</span>
+					</button>
+					<button
+						onclick={() => (showStats = !showStats)}
+						class="w-14 h-14 rounded-full text-sm {showStats
+							? 'bg-blue-600 hover:bg-blue-700'
+							: 'bg-gray-700 hover:bg-gray-600'}"
+					>
+						Stats
+					</button>
+					{#if showStats}
+						<button
+							onclick={() => {
+								allStats = clearStatsForKey(allStats, tonic);
+							}}
+							class="w-14 h-14 rounded-full text-xs bg-gray-700 hover:bg-gray-600"
+						>
+							Clear
+						</button>
+					{/if}
+				</div>
 
-		<div class="col-span-3"></div>
+				<div class="col-span-6">
+					<NoteLayout
+						{layoutMode}
+						notes={circleNotes}
+						{tonic}
+						{nameMode}
+						{showIntervals}
+						{showStats}
+						stats={keyStats}
+						{enabledSemitones}
+						{userPick}
+						{correctNote}
+						{cadenceNote}
+						{melodyDots}
+						{accidentalMode}
+						{preset}
+						{targetPitch}
+						onNoteClick={handleNoteClick}
+						onLayoutChange={handleLayoutChange}
+					/>
+				</div>
+
+				<div class="col-span-3"></div>
+			</div>
+		{/if}
 	</div>
 
 	<!-- Small screens: circle above, buttons below -->
@@ -414,6 +492,7 @@
 			{melodyDots}
 			{accidentalMode}
 			{preset}
+			{targetPitch}
 			onNoteClick={handleNoteClick}
 			onLayoutChange={handleLayoutChange}
 		/>

@@ -52,12 +52,6 @@
 		const info = NOTES[note];
 		const cluster = CLUSTER_CENTERS[info.augGroup];
 		const yOffset = STACK_OFFSETS[info.dimGroup];
-
-		// For left/right clusters, stack horizontally instead of vertically
-		if (info.augGroup === 1 || info.augGroup === 3) {
-			return { x: cluster.x, y: cluster.y + yOffset };
-		}
-		// For top/bottom clusters, stack vertically
 		return { x: cluster.x, y: cluster.y + yOffset };
 	}
 

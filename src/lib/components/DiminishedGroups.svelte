@@ -36,16 +36,16 @@
 	const CY = SIZE / 2;
 	const CENTER_R = 50;
 	const NOTE_R = 26;
-	const COMPASS_R = 48; // distance from group center to note center
+	const COMPASS_R = 44; // distance from group center to note center
 
 	// Group centers: indexed by dimGroup
 	// dimGroup 0 (yellow) → top-right
 	// dimGroup 1 (red) → bottom
 	// dimGroup 2 (blue) → top-left
 	const GROUP_CENTERS: { x: number; y: number }[] = [
-		{ x: 280, y: 115 },  // dimGroup 0 = top-right
-		{ x: 200, y: 300 },  // dimGroup 1 = bottom
-		{ x: 120, y: 115 },  // dimGroup 2 = top-left
+		{ x: 290, y: 105 },  // dimGroup 0 = top-right
+		{ x: 200, y: 330 },  // dimGroup 1 = bottom (pushed down to avoid center overlap)
+		{ x: 110, y: 105 },  // dimGroup 2 = top-left
 	];
 
 	// Compass offsets within a group, indexed by augGroup

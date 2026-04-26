@@ -75,7 +75,7 @@
 					sharpName,
 					octave,
 					isBlack: BLACK_SEMITONES.has(s),
-					pitch: `${sharpName}${octave}`,
+					pitch: `${sharpToNoteName(sharpName)}${octave}`,
 				});
 			}
 		}
@@ -87,15 +87,13 @@
 	const blackKeys = allKeys.filter((k) => k.isBlack);
 
 	// Black key positions as percentage of total white key width
-	const blackKeyPositions = $derived(
-		blackKeys.map((bk) => {
+	const blackKeyPositions = blackKeys.map((bk) => {
 			const whiteIdx = whiteKeys.filter(
 				(wk) => wk.octave < bk.octave || (wk.octave === bk.octave && SHARP_NOTES.indexOf(wk.sharpName) < SHARP_NOTES.indexOf(bk.sharpName)),
 			).length;
 			const pct = (whiteIdx / whiteKeys.length) * 100;
 			return { ...bk, pct };
-		}),
-	);
+	});
 
 	function getDisplayName(note: NoteName): string {
 		if (nameMode === 'augdim') return NOTES[note].augDim;

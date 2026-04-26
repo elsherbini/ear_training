@@ -32,7 +32,7 @@
 	let tonic: NoteName = $state('C');
 	let preset = $state('Major');
 	let enabledSemitones: number[] = $state([...PRESETS[0].semitones]);
-	let nameMode: 'traditional' | 'augdim' = $state('augdim');
+	let nameMode: 'traditional' | 'augdim' = $state('traditional');
 	let showIntervals = $state(true);
 	let showStats = $state(false);
 	let accidentalMode: AccidentalMode = $state(getAccidentalMode('C', 'Major'));

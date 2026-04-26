@@ -115,8 +115,8 @@
 				? 'bg-blue-600'
 				: 'bg-gray-800 text-gray-400 hover:bg-gray-700'}"
 		>
-			<span class={nameMode === 'traditional' && accidentalMode === 'flat' ? 'font-bold' : 'text-gray-400'}>♭</span>
-			<span class={nameMode === 'traditional' && accidentalMode === 'sharp' ? 'font-bold' : 'text-gray-400'}>♯</span>
+			Traditional
+			<span class={nameMode === 'traditional' && accidentalMode === 'flat' ? 'font-bold' : 'text-gray-400'}>♭</span>/<span class={nameMode === 'traditional' && accidentalMode === 'sharp' ? 'font-bold' : 'text-gray-400'}>♯</span>
 		</button>
 		<button
 			onclick={() => onNameModeChange('augdim')}

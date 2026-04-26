@@ -54,6 +54,13 @@ export function getCircleForTonic(tonic: NoteName): NoteName[] {
 	return [...CIRCLE_OF_FIFTHS.slice(idx), ...CIRCLE_OF_FIFTHS.slice(0, idx)];
 }
 
+export type LayoutMode = 'fifths' | 'chromatic' | 'augmented' | 'diminished';
+
+export function getChromaticCircle(tonic: NoteName): NoteName[] {
+	const idx = CHROMATIC_NOTES.indexOf(tonic);
+	return [...CHROMATIC_NOTES.slice(idx), ...CHROMATIC_NOTES.slice(0, idx)];
+}
+
 export function noteFromInterval(tonic: NoteName, semitones: number): NoteName {
 	const tonicIndex = CHROMATIC_NOTES.indexOf(tonic);
 	const noteIndex = ((tonicIndex + semitones) % 12 + 12) % 12;

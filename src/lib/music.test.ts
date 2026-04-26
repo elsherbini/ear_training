@@ -6,6 +6,7 @@ import {
 	INTERVAL_LABELS,
 	PRESETS,
 	getCircleForTonic,
+	getChromaticCircle,
 	noteFromInterval,
 	intervalBetween,
 	intervalLabel,
@@ -270,5 +271,32 @@ describe('getCadenceNotes', () => {
 			{ note: 'C', pitch: 'C4' },
 			{ note: 'F', pitch: 'F3' },
 		]);
+	});
+});
+
+describe('getChromaticCircle', () => {
+	it('returns tonic at position 0', () => {
+		const circle = getChromaticCircle('C');
+		expect(circle[0]).toBe('C');
+		expect(circle).toHaveLength(12);
+	});
+
+	it('goes in chromatic order from the tonic', () => {
+		const circle = getChromaticCircle('C');
+		expect(circle).toEqual(['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']);
+	});
+
+	it('rotates correctly for G', () => {
+		const circle = getChromaticCircle('G');
+		expect(circle[0]).toBe('G');
+		expect(circle[1]).toBe('Ab');
+		expect(circle[11]).toBe('Gb');
+	});
+
+	it('rotates correctly for F', () => {
+		const circle = getChromaticCircle('F');
+		expect(circle[0]).toBe('F');
+		expect(circle[1]).toBe('Gb');
+		expect(circle[11]).toBe('E');
 	});
 });

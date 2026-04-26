@@ -131,11 +131,19 @@ describe('constants', () => {
 	});
 
 	it('has correct presets', () => {
-		expect(PRESETS).toHaveLength(5);
+		expect(PRESETS).toHaveLength(10);
 		const major = PRESETS.find((p) => p.name === 'Major');
 		expect(major?.semitones).toEqual([0, 2, 4, 5, 7, 9, 11]);
 		const chromatic = PRESETS.find((p) => p.name === 'Chromatic');
 		expect(chromatic?.semitones).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+	});
+
+	it('has correct diminished/octatonic presets', () => {
+		expect(PRESETS.find((p) => p.name === 'Maj6 Diminished')?.semitones).toEqual([0, 2, 4, 5, 7, 8, 9, 11]);
+		expect(PRESETS.find((p) => p.name === 'Min6 Diminished')?.semitones).toEqual([0, 2, 3, 5, 7, 8, 9, 11]);
+		expect(PRESETS.find((p) => p.name === 'Dom7 Diminished')?.semitones).toEqual([0, 2, 4, 5, 7, 8, 10, 11]);
+		expect(PRESETS.find((p) => p.name === 'Dom7b5 Diminished')?.semitones).toEqual([0, 2, 4, 5, 6, 8, 10, 11]);
+		expect(PRESETS.find((p) => p.name === 'Octatonic')?.semitones).toEqual([0, 2, 3, 5, 6, 8, 9, 11]);
 	});
 });
 
@@ -219,6 +227,14 @@ describe('matchPreset', () => {
 
 	it('matches Chromatic', () => {
 		expect(matchPreset([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])).toBe('Chromatic');
+	});
+
+	it('matches diminished/octatonic presets', () => {
+		expect(matchPreset([0, 2, 4, 5, 7, 8, 9, 11])).toBe('Maj6 Diminished');
+		expect(matchPreset([0, 2, 3, 5, 7, 8, 9, 11])).toBe('Min6 Diminished');
+		expect(matchPreset([0, 2, 4, 5, 7, 8, 10, 11])).toBe('Dom7 Diminished');
+		expect(matchPreset([0, 2, 4, 5, 6, 8, 10, 11])).toBe('Dom7b5 Diminished');
+		expect(matchPreset([0, 2, 3, 5, 6, 8, 9, 11])).toBe('Octatonic');
 	});
 });
 
@@ -423,6 +439,31 @@ describe('getAccidentalMode', () => {
 
 	it('returns flat for Melodic Minor with flat natural minor', () => {
 		expect(getAccidentalMode('D', 'Melodic Minor')).toBe('flat');
+	});
+
+	it('uses major bias for Maj6 Diminished', () => {
+		expect(getAccidentalMode('G', 'Maj6 Diminished')).toBe('sharp');
+		expect(getAccidentalMode('F', 'Maj6 Diminished')).toBe('flat');
+	});
+
+	it('uses minor bias for Min6 Diminished', () => {
+		expect(getAccidentalMode('E', 'Min6 Diminished')).toBe('sharp');
+		expect(getAccidentalMode('D', 'Min6 Diminished')).toBe('flat');
+	});
+
+	it('uses major bias for Dom7 Diminished', () => {
+		expect(getAccidentalMode('G', 'Dom7 Diminished')).toBe('sharp');
+		expect(getAccidentalMode('F', 'Dom7 Diminished')).toBe('flat');
+	});
+
+	it('uses major bias for Dom7b5 Diminished', () => {
+		expect(getAccidentalMode('G', 'Dom7b5 Diminished')).toBe('sharp');
+		expect(getAccidentalMode('F', 'Dom7b5 Diminished')).toBe('flat');
+	});
+
+	it('uses minor bias for Octatonic', () => {
+		expect(getAccidentalMode('E', 'Octatonic')).toBe('sharp');
+		expect(getAccidentalMode('D', 'Octatonic')).toBe('flat');
 	});
 });
 

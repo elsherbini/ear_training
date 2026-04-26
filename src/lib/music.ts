@@ -48,6 +48,11 @@ export const PRESETS: Preset[] = [
 	{ name: 'Natural Minor', semitones: [0, 2, 3, 5, 7, 8, 10] },
 	{ name: 'Harmonic Minor', semitones: [0, 2, 3, 5, 7, 8, 11] },
 	{ name: 'Melodic Minor', semitones: [0, 2, 3, 5, 7, 9, 11] },
+	{ name: 'Maj6 Diminished', semitones: [0, 2, 4, 5, 7, 8, 9, 11] },
+	{ name: 'Min6 Diminished', semitones: [0, 2, 3, 5, 7, 8, 9, 11] },
+	{ name: 'Dom7 Diminished', semitones: [0, 2, 4, 5, 7, 8, 10, 11] },
+	{ name: 'Dom7b5 Diminished', semitones: [0, 2, 4, 5, 6, 8, 10, 11] },
+	{ name: 'Octatonic', semitones: [0, 2, 3, 5, 6, 8, 9, 11] },
 	{ name: 'Chromatic', semitones: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
 ];
 
@@ -231,7 +236,7 @@ function toTonalScale(preset: string): string | null {
 
 /** Determine whether a preset is minor-family (uses natural minor for bias) */
 function isMinorPreset(preset: string): boolean {
-	return ['Natural Minor', 'Harmonic Minor', 'Melodic Minor'].includes(preset);
+	return ['Natural Minor', 'Harmonic Minor', 'Melodic Minor', 'Min6 Diminished', 'Octatonic'].includes(preset);
 }
 
 /**

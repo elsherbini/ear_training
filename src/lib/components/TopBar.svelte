@@ -60,7 +60,9 @@
 
 <div class="flex flex-wrap items-center gap-3 p-4 bg-gray-900 rounded-lg">
 	<!-- Tonic selector -->
-	<div class="flex gap-1">
+	<div>
+		<div class="text-[10px] text-gray-500 mb-1">Key Selection</div>
+		<div class="flex gap-1">
 		{#each CHROMATIC_NOTES as k}
 			<button
 				onclick={() => onTonicChange(k)}
@@ -71,24 +73,30 @@
 				{getDisplayName(k)}
 			</button>
 		{/each}
+		</div>
 	</div>
 
 	<!-- Preset -->
-	<select
-		value={preset}
-		onchange={handlePresetSelect}
-		class="bg-gray-800 rounded px-2 py-1 text-sm"
-	>
-		{#each PRESETS as p}
-			<option value={p.name}>{p.name}</option>
-		{/each}
-		{#if preset === 'Custom'}
-			<option value="Custom">Custom</option>
-		{/if}
-	</select>
+	<div>
+		<div class="text-[10px] text-gray-500 mb-1">Scale Preset</div>
+		<select
+			value={preset}
+			onchange={handlePresetSelect}
+			class="bg-gray-800 rounded px-2 py-1 text-sm"
+		>
+			{#each PRESETS as p}
+				<option value={p.name}>{p.name}</option>
+			{/each}
+			{#if preset === 'Custom'}
+				<option value="Custom">Custom</option>
+			{/if}
+		</select>
+	</div>
 
 	<!-- Interval toggles -->
-	<div class="flex gap-1 flex-wrap">
+	<div>
+		<div class="text-[10px] text-gray-500 mb-1">Customize Tested Intervals</div>
+		<div class="flex gap-1 flex-wrap">
 		{#each INTERVAL_LABELS as label, i}
 			<button
 				onclick={() => toggleSemitone(i)}
@@ -99,10 +107,13 @@
 				{label}
 			</button>
 		{/each}
+		</div>
 	</div>
 
 	<!-- Name mode toggle -->
-	<div class="flex items-center gap-1 text-xs">
+	<div>
+		<div class="text-[10px] text-gray-500 mb-1">Note Names</div>
+		<div class="flex items-center gap-1 text-xs">
 		<button
 			onclick={() => {
 				if (nameMode === 'traditional') {
@@ -126,18 +137,16 @@
 		>
 			Aug Dim
 		</button>
+		<button
+			onclick={() => onShowIntervalsChange(!showIntervals)}
+			class="px-2 py-1 rounded {showIntervals
+				? 'bg-blue-600'
+				: 'bg-gray-800 hover:bg-gray-700'}"
+		>
+			<span class={showIntervals ? 'font-bold' : 'text-gray-400'}>Show</span>/<span class={showIntervals ? 'text-gray-400' : 'font-bold'}>Hide</span> Intervals
+		</button>
+		</div>
 	</div>
-
-	<!-- Show intervals toggle -->
-	<label class="flex items-center gap-1 text-xs cursor-pointer">
-		<input
-			type="checkbox"
-			checked={showIntervals}
-			onchange={() => onShowIntervalsChange(!showIntervals)}
-			class="rounded"
-		/>
-		Show intervals
-	</label>
 
 	<!-- Drone link -->
 	<a href="{base}/drone" class="ml-auto text-2xl hover:scale-110 transition-transform" title="Drone">🛸</a>

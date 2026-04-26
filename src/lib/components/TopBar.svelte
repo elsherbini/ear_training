@@ -64,7 +64,7 @@
 		{#each CHROMATIC_NOTES as k}
 			<button
 				onclick={() => onTonicChange(k)}
-				class="px-2 py-1 rounded text-xs {tonic === k
+				class="min-w-[2em] px-2 py-1 rounded text-xs text-center {tonic === k
 					? 'bg-blue-600'
 					: 'bg-gray-700 hover:bg-gray-600'}"
 			>

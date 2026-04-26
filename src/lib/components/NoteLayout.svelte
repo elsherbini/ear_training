@@ -18,6 +18,7 @@
 		userPick: NoteName | null;
 		correctNote: NoteName | null;
 		cadenceNote: NoteName | null;
+		cadencePitch: string | null;
 		targetPitch: string | null;
 		melodyDots: { result: 'correct' | 'incorrect' | null }[];
 		accidentalMode: AccidentalMode;
@@ -38,6 +39,7 @@
 		userPick,
 		correctNote,
 		cadenceNote,
+		cadencePitch,
 		targetPitch,
 		melodyDots = [],
 		accidentalMode,
@@ -129,6 +131,7 @@
 			{userPick}
 			{correctNote}
 			{cadenceNote}
+			{cadencePitch}
 			{melodyDots}
 			{accidentalMode}
 			{preset}

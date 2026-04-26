@@ -19,6 +19,7 @@
 		userPick: NoteName | null;
 		correctNote: NoteName | null;
 		cadenceNote: NoteName | null;
+		cadencePitch: string | null;
 		melodyDots: { result: 'correct' | 'incorrect' | null }[];
 		accidentalMode: AccidentalMode;
 		preset: string;
@@ -36,12 +37,24 @@
 		userPick,
 		correctNote,
 		cadenceNote,
+		cadencePitch,
 		melodyDots = [],
 		accidentalMode,
 		preset,
 		targetPitch,
 		onNoteClick,
 	}: Props = $props();
+
+	// Brief flash on the exact key the user clicked (works in both interval and melody modes)
+	let flashPitch: string | null = $state(null);
+	let flashTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	function handleKeyClick(key: PianoKey) {
+		if (flashTimeout) clearTimeout(flashTimeout);
+		flashPitch = key.pitch;
+		flashTimeout = setTimeout(() => { flashPitch = null; }, 400);
+		onNoteClick?.(key.note);
+	}
 
 	// --- Key generation for C2-C5 ---
 	const SHARP_NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -101,6 +114,26 @@
 		return getTraditionalDisplayName(semitone, tonic, preset, accidentalMode);
 	}
 
+	function isPlaying(key: PianoKey): boolean {
+		if (cadenceNote === key.note && cadencePitch === key.pitch) return true;
+		if (correctNote === key.note && targetPitch === key.pitch) return true;
+		if (flashPitch === key.pitch) return true;
+		return false;
+	}
+
+	function getKeyStyle(key: PianoKey): string {
+		if (!isPlaying(key)) return '';
+		const color = NOTES[key.note].color;
+		return `background-color: ${color}; box-shadow: 1px 1px 15px 15px ${color.replace('rgb(', 'rgba(').replace(')', ', 0.25)')}; transform: translateY(2px);`;
+	}
+
+	function getBlackKeyStyle(key: PianoKey & { pct: number }): string {
+		const base = `left: ${key.pct}%; transform: translateX(-50%)`;
+		if (!isPlaying(key)) return base;
+		const color = NOTES[key.note].color;
+		return `${base}; background-color: ${color}; box-shadow: 1px 1px 15px 15px ${color.replace('rgb(', 'rgba(').replace(')', ', 0.25)')}; transform: translateX(-50%) translateY(2px);`;
+	}
+
 	function getBadgeColor(key: PianoKey): string {
 		// Feedback: correct answer gets green badge
 		if (correctNote === key.note && targetPitch === key.pitch) return 'bg-green-500 text-gray-900';
@@ -143,7 +176,8 @@
 				{@const semitone = intervalBetween(tonic, wk.note)}
 				<button
 					class="white-key"
-					onclick={() => onNoteClick?.(wk.note)}
+					style={getKeyStyle(wk)}
+					onclick={() => handleKeyClick(wk)}
 				>
 					<div class="key-badge {getBadgeColor(wk)}">
 						<span class="text-[10px] font-bold leading-none">{getDisplayName(wk.note)}</span>
@@ -159,8 +193,8 @@
 				{@const semitone = intervalBetween(tonic, bk.note)}
 				<button
 					class="black-key"
-					style="left: {bk.pct}%; transform: translateX(-50%);"
-					onclick={() => onNoteClick?.(bk.note)}
+					style={getBlackKeyStyle(bk)}
+					onclick={() => handleKeyClick(bk)}
 				>
 					<div class="key-badge {getBadgeColor(bk)}">
 						<span class="text-[9px] font-bold leading-none">{getDisplayName(bk.note)}</span>

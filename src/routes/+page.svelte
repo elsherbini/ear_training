@@ -63,6 +63,7 @@
 	let userPick: NoteName | null = $state(null);
 	let correctNote: NoteName | null = $state(null);
 	let cadenceNote: NoteName | null = $state(null);
+	let cadencePitch: string | null = $state(null);
 	let noteHistory: { note: NoteName; octave: number }[] = $state([]);
 
 	// Derived
@@ -108,9 +109,11 @@
 			cadenceNotes.map((c) => c.pitch),
 			(_pitch, index) => {
 				cadenceNote = cadenceNotes[index].note;
+				cadencePitch = cadenceNotes[index].pitch;
 			},
 		);
 		cadenceNote = null;
+		cadencePitch = null;
 		noteHistory = [];
 
 		playNextNote();
@@ -129,6 +132,7 @@
 		userPick = null;
 		correctNote = null;
 		cadenceNote = null;
+		cadencePitch = null;
 		melodyNotes = [];
 		melodyPitches = [];
 		melodyIndex = 0;
@@ -140,6 +144,7 @@
 		userPick = null;
 		correctNote = null;
 		cadenceNote = null;
+		cadencePitch = null;
 
 		if (quizMode === 'melody') {
 			melodyNotes = generateMelody(tonic, enabledSemitones);
@@ -206,9 +211,11 @@
 				melodyPitches,
 				(_pitch, idx) => {
 					correctNote = melodyNotes[idx].note;
+					targetPitch = melodyPitches[idx];
 				},
 			);
 			correctNote = null;
+			targetPitch = null;
 			feedbackTimeout = setTimeout(() => {
 				playNextNote();
 			}, 800);
@@ -265,9 +272,11 @@
 			cadenceNotes.map((c) => c.pitch),
 			(_pitch, index) => {
 				cadenceNote = cadenceNotes[index].note;
+				cadencePitch = cadenceNotes[index].pitch;
 			},
 		);
 		cadenceNote = null;
+		cadencePitch = null;
 		noteHistory = [];
 
 		// Resume quiz
@@ -342,6 +351,7 @@
 						{userPick}
 						{correctNote}
 						{cadenceNote}
+						{cadencePitch}
 						{melodyDots}
 						{accidentalMode}
 						{preset}
@@ -461,6 +471,7 @@
 						{userPick}
 						{correctNote}
 						{cadenceNote}
+						{cadencePitch}
 						{melodyDots}
 						{accidentalMode}
 						{preset}
@@ -489,6 +500,7 @@
 			{userPick}
 			{correctNote}
 			{cadenceNote}
+			{cadencePitch}
 			{melodyDots}
 			{accidentalMode}
 			{preset}

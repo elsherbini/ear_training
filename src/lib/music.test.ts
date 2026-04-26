@@ -222,7 +222,7 @@ describe('matchPreset', () => {
 describe('pickRandomTarget', () => {
 	it('returns a note from enabled intervals', () => {
 		const result = pickRandomTarget('C', [0, 7]);
-		expect(result.note).toBe('G');
+		expect(['C', 'G']).toContain(result.note);
 	});
 
 	it('returns octave 2 or 3', () => {

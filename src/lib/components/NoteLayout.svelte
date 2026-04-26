@@ -4,6 +4,7 @@
 	import NoteCircle from './NoteCircle.svelte';
 	import AugmentedCompass from './AugmentedCompass.svelte';
 	import DiminishedGroups from './DiminishedGroups.svelte';
+	import PianoLayout from './PianoLayout.svelte';
 
 	interface Props {
 		layoutMode: LayoutMode;
@@ -17,6 +18,7 @@
 		userPick: NoteName | null;
 		correctNote: NoteName | null;
 		cadenceNote: NoteName | null;
+		targetPitch: string | null;
 		melodyDots: { result: 'correct' | 'incorrect' | null }[];
 		accidentalMode: AccidentalMode;
 		preset: string;
@@ -36,6 +38,7 @@
 		userPick,
 		correctNote,
 		cadenceNote,
+		targetPitch,
 		melodyDots = [],
 		accidentalMode,
 		preset,
@@ -48,6 +51,7 @@
 		{ mode: 'fifths', label: '5ths' },
 		{ mode: 'augmented', label: 'Augmented' },
 		{ mode: 'diminished', label: 'Diminished' },
+		{ mode: 'piano', label: 'Piano' },
 	];
 </script>
 
@@ -112,6 +116,23 @@
 			{melodyDots}
 			{accidentalMode}
 			{preset}
+			{onNoteClick}
+		/>
+	{:else if layoutMode === 'piano'}
+		<PianoLayout
+			{tonic}
+			{nameMode}
+			{showIntervals}
+			{showStats}
+			{stats}
+			{enabledSemitones}
+			{userPick}
+			{correctNote}
+			{cadenceNote}
+			{melodyDots}
+			{accidentalMode}
+			{preset}
+			{targetPitch}
 			{onNoteClick}
 		/>
 	{/if}

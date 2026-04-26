@@ -56,7 +56,7 @@ export function getCircleForTonic(tonic: NoteName): NoteName[] {
 	return [...CIRCLE_OF_FIFTHS.slice(idx), ...CIRCLE_OF_FIFTHS.slice(0, idx)];
 }
 
-export type LayoutMode = 'fifths' | 'chromatic' | 'augmented' | 'diminished';
+export type LayoutMode = 'fifths' | 'chromatic' | 'augmented' | 'diminished' | 'piano';
 
 export type AccidentalMode = 'sharp' | 'flat';
 

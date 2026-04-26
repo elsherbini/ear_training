@@ -15,7 +15,7 @@
 		matchPreset,
 	} from '$lib/music';
 	import { loadStats, saveStats, recordAnswer, clearStatsForKey, getKeyStats, type AllStats } from '$lib/stats';
-	import CircleOfFifths from '$lib/components/CircleOfFifths.svelte';
+	import NoteCircle from '$lib/components/NoteCircle.svelte';
 	import TopBar from '$lib/components/TopBar.svelte';
 
 	// Quiz state
@@ -347,7 +347,7 @@
 		</div>
 
 		<div class="col-span-6">
-			<CircleOfFifths
+			<NoteCircle
 				notes={circleNotes}
 				{tonic}
 				{nameMode}
@@ -368,7 +368,7 @@
 
 	<!-- Small screens: circle above, buttons below -->
 	<div class="mt-6 md:hidden flex flex-col items-center">
-		<CircleOfFifths
+		<NoteCircle
 			notes={circleNotes}
 			{tonic}
 			{nameMode}

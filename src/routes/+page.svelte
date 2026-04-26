@@ -7,6 +7,7 @@
 		type NoteName,
 		type MelodyNote,
 		type LayoutMode,
+		type AccidentalMode,
 		PRESETS,
 		getCircleForTonic,
 		getChromaticCircle,
@@ -15,6 +16,7 @@
 		getCadenceNotes,
 		intervalBetween,
 		matchPreset,
+		getAccidentalMode,
 	} from '$lib/music';
 	import { loadStats, saveStats, recordAnswer, clearStatsForKey, getKeyStats, type AllStats } from '$lib/stats';
 	import NoteLayout from '$lib/components/NoteLayout.svelte';
@@ -33,6 +35,7 @@
 	let nameMode: 'traditional' | 'augdim' = $state('augdim');
 	let showIntervals = $state(true);
 	let showStats = $state(false);
+	let accidentalMode: AccidentalMode = $state(getAccidentalMode('C', 'Major'));
 	let layoutMode: LayoutMode = $state('chromatic');
 	let allStats: AllStats = $state({});
 	let quizMode: 'interval' | 'melody' = $state('interval');
@@ -238,6 +241,7 @@
 	async function handleTonicChange(newTonic: NoteName) {
 		if (newTonic === tonic) return;
 		tonic = newTonic;
+		accidentalMode = getAccidentalMode(newTonic, preset);
 		drone.setKey(newTonic);
 		const [start, num] = droneRangeForKey(newTonic);
 		drone.setOctaveRange(start, num);
@@ -272,6 +276,7 @@
 
 	function handlePresetChange(newPreset: string) {
 		preset = newPreset;
+		accidentalMode = getAccidentalMode(tonic, newPreset);
 	}
 
 	function handleSemitonesChange(newSemitones: number[]) {
@@ -281,6 +286,10 @@
 
 	function handleNameModeChange(mode: 'traditional' | 'augdim') {
 		nameMode = mode;
+	}
+
+	function handleAccidentalModeChange(mode: AccidentalMode) {
+		accidentalMode = mode;
 	}
 
 	function handleShowIntervalsChange(show: boolean) {
@@ -305,11 +314,13 @@
 		{enabledSemitones}
 		{nameMode}
 		{showIntervals}
+		{accidentalMode}
 		onTonicChange={handleTonicChange}
 		onPresetChange={handlePresetChange}
 		onSemitonesChange={handleSemitonesChange}
 		onNameModeChange={handleNameModeChange}
 		onShowIntervalsChange={handleShowIntervalsChange}
+		onAccidentalModeChange={handleAccidentalModeChange}
 	/>
 
 	<!-- Large screens: buttons left of circle in grid -->
@@ -376,6 +387,8 @@
 				{correctNote}
 				{cadenceNote}
 				{melodyDots}
+				{accidentalMode}
+				{preset}
 				onNoteClick={handleNoteClick}
 				onLayoutChange={handleLayoutChange}
 			/>
@@ -399,6 +412,8 @@
 			{correctNote}
 			{cadenceNote}
 			{melodyDots}
+			{accidentalMode}
+			{preset}
 			onNoteClick={handleNoteClick}
 			onLayoutChange={handleLayoutChange}
 		/>

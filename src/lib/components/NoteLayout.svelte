@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { NoteName, LayoutMode } from '$lib/music';
+	import type { NoteName, LayoutMode, AccidentalMode } from '$lib/music';
 	import type { IntervalStats } from '$lib/stats';
 	import NoteCircle from './NoteCircle.svelte';
 	import AugmentedCompass from './AugmentedCompass.svelte';
@@ -18,6 +18,8 @@
 		correctNote: NoteName | null;
 		cadenceNote: NoteName | null;
 		melodyDots: { result: 'correct' | 'incorrect' | null }[];
+		accidentalMode: AccidentalMode;
+		preset: string;
 		onNoteClick?: (note: NoteName) => void;
 		onLayoutChange?: (mode: LayoutMode) => void;
 	}
@@ -35,6 +37,8 @@
 		correctNote,
 		cadenceNote,
 		melodyDots = [],
+		accidentalMode,
+		preset,
 		onNoteClick,
 		onLayoutChange,
 	}: Props = $props();
@@ -74,6 +78,8 @@
 			{correctNote}
 			{cadenceNote}
 			{melodyDots}
+			{accidentalMode}
+			{preset}
 			{onNoteClick}
 		/>
 	{:else if layoutMode === 'augmented'}
@@ -88,6 +94,8 @@
 			{correctNote}
 			{cadenceNote}
 			{melodyDots}
+			{accidentalMode}
+			{preset}
 			{onNoteClick}
 		/>
 	{:else if layoutMode === 'diminished'}
@@ -102,6 +110,8 @@
 			{correctNote}
 			{cadenceNote}
 			{melodyDots}
+			{accidentalMode}
+			{preset}
 			{onNoteClick}
 		/>
 	{/if}

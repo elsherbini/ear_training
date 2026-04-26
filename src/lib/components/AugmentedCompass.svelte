@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { NOTES, CHROMATIC_NOTES, INTERVAL_LABELS, intervalBetween } from '$lib/music';
-	import type { NoteName } from '$lib/music';
+	import { NOTES, CHROMATIC_NOTES, INTERVAL_LABELS, intervalBetween, getTraditionalDisplayName } from '$lib/music';
+	import type { NoteName, AccidentalMode } from '$lib/music';
 	import type { IntervalStats } from '$lib/stats';
 
 	interface Props {
@@ -14,6 +14,8 @@
 		correctNote: NoteName | null;
 		cadenceNote: NoteName | null;
 		melodyDots: { result: 'correct' | 'incorrect' | null }[];
+		accidentalMode: AccidentalMode;
+		preset: string;
 		onNoteClick?: (note: NoteName) => void;
 	}
 
@@ -28,6 +30,8 @@
 		correctNote,
 		cadenceNote,
 		melodyDots = [],
+		accidentalMode,
+		preset,
 		onNoteClick,
 	}: Props = $props();
 
@@ -74,7 +78,8 @@
 	}
 
 	function getDisplayName(note: NoteName): string {
-		return nameMode === 'augdim' ? NOTES[note].augDim : note;
+		if (nameMode === 'augdim') return NOTES[note].augDim;
+		return getTraditionalDisplayName(NOTES[note].semitones, tonic, preset, accidentalMode);
 	}
 </script>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import { CHROMATIC_NOTES, NOTES, PRESETS, INTERVAL_LABELS, matchPreset, type NoteName } from '$lib/music';
+	import { CHROMATIC_NOTES, NOTES, PRESETS, INTERVAL_LABELS, matchPreset, getTraditionalDisplayName, type NoteName, type AccidentalMode } from '$lib/music';
 
 	interface Props {
 		tonic: NoteName;
@@ -8,10 +8,12 @@
 		enabledSemitones: number[];
 		nameMode: 'traditional' | 'augdim';
 		showIntervals: boolean;
+		accidentalMode: AccidentalMode;
 		onTonicChange: (tonic: NoteName) => void;
 		onPresetChange: (preset: string) => void;
 		onSemitonesChange: (semitones: number[]) => void;
 		onNameModeChange: (mode: 'traditional' | 'augdim') => void;
+		onAccidentalModeChange: (mode: AccidentalMode) => void;
 		onShowIntervalsChange: (show: boolean) => void;
 	}
 
@@ -21,15 +23,18 @@
 		enabledSemitones,
 		nameMode,
 		showIntervals,
+		accidentalMode,
 		onTonicChange,
 		onPresetChange,
 		onSemitonesChange,
 		onNameModeChange,
+		onAccidentalModeChange,
 		onShowIntervalsChange,
 	}: Props = $props();
 
 	function getDisplayName(note: NoteName): string {
-		return nameMode === 'augdim' ? NOTES[note].augDim : note;
+		if (nameMode === 'augdim') return NOTES[note].augDim;
+		return getTraditionalDisplayName(NOTES[note].semitones, tonic, preset, accidentalMode);
 	}
 
 	function handlePresetSelect(e: Event) {
@@ -99,18 +104,24 @@
 	<!-- Name mode toggle -->
 	<div class="flex items-center gap-1 text-xs">
 		<button
-			onclick={() => onNameModeChange('traditional')}
+			onclick={() => {
+				if (nameMode === 'traditional') {
+					onAccidentalModeChange(accidentalMode === 'sharp' ? 'flat' : 'sharp');
+				} else {
+					onNameModeChange('traditional');
+				}
+			}}
 			class="px-2 py-1 rounded {nameMode === 'traditional'
-				? 'bg-blue-600'
-				: 'bg-gray-700 hover:bg-gray-600'}"
+				? 'bg-blue-600 font-bold'
+				: 'bg-gray-800 text-gray-400 hover:bg-gray-700'}"
 		>
-			Traditional
+			Traditional {nameMode === 'traditional' ? (accidentalMode === 'sharp' ? '\u266F' : '\u266D') : ''}
 		</button>
 		<button
 			onclick={() => onNameModeChange('augdim')}
 			class="px-2 py-1 rounded {nameMode === 'augdim'
-				? 'bg-blue-600'
-				: 'bg-gray-700 hover:bg-gray-600'}"
+				? 'bg-blue-600 font-bold'
+				: 'bg-gray-800 text-gray-400 hover:bg-gray-700'}"
 		>
 			Aug Dim
 		</button>

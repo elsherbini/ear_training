@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
 	CHROMATIC_NOTES,
 	CIRCLE_OF_FIFTHS,
@@ -13,6 +13,7 @@ import {
 	matchPreset,
 	pickRandomTarget,
 	getCadenceNotes,
+	type NoteName,
 } from './music';
 
 describe('constants', () => {
@@ -239,6 +240,77 @@ describe('pickRandomTarget', () => {
 	it('falls back to tonic when no intervals available', () => {
 		const result = pickRandomTarget('C', [0]);
 		expect(result.note).toBe('C');
+	});
+});
+
+describe('pickRandomTarget weighted selection', () => {
+	const tonic: NoteName = 'C';
+	const majorSemitones = [0, 2, 4, 5, 7, 9, 11];
+
+	it('returns a valid note and octave', () => {
+		const result = pickRandomTarget(tonic, majorSemitones);
+		expect(result).toHaveProperty('note');
+		expect(result).toHaveProperty('octave');
+		expect([2, 3]).toContain(result.octave);
+	});
+
+	it('returns tonic at octave 3 when no semitones enabled', () => {
+		const result = pickRandomTarget('C', []);
+		expect(result).toEqual({ note: 'C', octave: 3 });
+	});
+
+	it('never repeats the last pick', () => {
+		const lastPick = { note: 'E' as NoteName, octave: 3 };
+		for (let i = 0; i < 100; i++) {
+			const result = pickRandomTarget(tonic, majorSemitones, lastPick);
+			const isSame = result.note === lastPick.note && result.octave === lastPick.octave;
+			expect(isSame).toBe(false);
+		}
+	});
+
+	it('still works when only one semitone enabled (can only avoid same octave)', () => {
+		const lastPick = { note: 'C' as NoteName, octave: 3 };
+		for (let i = 0; i < 50; i++) {
+			const result = pickRandomTarget(tonic, [0], lastPick);
+			// Should always return octave 2 since octave 3 is excluded
+			expect(result).toEqual({ note: 'C', octave: 2 });
+		}
+	});
+
+	it('weights recent notes lower than non-recent notes', () => {
+		// With 2 semitones [0, 2] and recent history containing all octave variants of semitone 0 (C),
+		// semitone 2 (D) should appear roughly twice as often
+		const recentHistory = [
+			{ note: 'C' as NoteName, octave: 2 },
+			{ note: 'C' as NoteName, octave: 3 },
+		];
+		const counts: Record<string, number> = {};
+		const iterations = 3000;
+		for (let i = 0; i < iterations; i++) {
+			const result = pickRandomTarget(tonic, [0, 2], undefined, recentHistory);
+			const key = `${result.note}${result.octave}`;
+			counts[key] = (counts[key] || 0) + 1;
+		}
+		// D2 and D3 each have weight 2, C2 and C3 each have weight 1
+		// So D notes should appear ~2x as often as C notes
+		const dTotal = (counts['D2'] || 0) + (counts['D3'] || 0);
+		const cTotal = (counts['C2'] || 0) + (counts['C3'] || 0);
+		const ratio = dTotal / cTotal;
+		expect(ratio).toBeGreaterThan(1.5);
+		expect(ratio).toBeLessThan(2.5);
+	});
+
+	it('works with both lastPick and recentHistory together', () => {
+		const lastPick = { note: 'C' as NoteName, octave: 2 };
+		const recentHistory = [
+			{ note: 'C' as NoteName, octave: 2 },
+			{ note: 'C' as NoteName, octave: 3 },
+		];
+		for (let i = 0; i < 100; i++) {
+			const result = pickRandomTarget(tonic, [0, 2], lastPick, recentHistory);
+			const isSame = result.note === lastPick.note && result.octave === lastPick.octave;
+			expect(isSame).toBe(false);
+		}
 	});
 });
 

@@ -81,6 +81,43 @@ describe('constants', () => {
 		for (const n of pGroup) expect(NOTES[n].augDim[0]).toBe('P');
 	});
 
+	it('assigns correct augGroup values', () => {
+		// Aug 0: C, E, Ab
+		expect(NOTES['C'].augGroup).toBe(0);
+		expect(NOTES['E'].augGroup).toBe(0);
+		expect(NOTES['Ab'].augGroup).toBe(0);
+		// Aug 1: Db, F, A
+		expect(NOTES['Db'].augGroup).toBe(1);
+		expect(NOTES['F'].augGroup).toBe(1);
+		expect(NOTES['A'].augGroup).toBe(1);
+		// Aug 2: D, Gb, Bb
+		expect(NOTES['D'].augGroup).toBe(2);
+		expect(NOTES['Gb'].augGroup).toBe(2);
+		expect(NOTES['Bb'].augGroup).toBe(2);
+		// Aug 3: Eb, G, B
+		expect(NOTES['Eb'].augGroup).toBe(3);
+		expect(NOTES['G'].augGroup).toBe(3);
+		expect(NOTES['B'].augGroup).toBe(3);
+	});
+
+	it('assigns correct dimGroup values', () => {
+		// Dim 0 (yellow): C, Eb, Gb, A
+		expect(NOTES['C'].dimGroup).toBe(0);
+		expect(NOTES['Eb'].dimGroup).toBe(0);
+		expect(NOTES['Gb'].dimGroup).toBe(0);
+		expect(NOTES['A'].dimGroup).toBe(0);
+		// Dim 1 (red): Db, E, G, Bb
+		expect(NOTES['Db'].dimGroup).toBe(1);
+		expect(NOTES['E'].dimGroup).toBe(1);
+		expect(NOTES['G'].dimGroup).toBe(1);
+		expect(NOTES['Bb'].dimGroup).toBe(1);
+		// Dim 2 (blue): D, F, Ab, B
+		expect(NOTES['D'].dimGroup).toBe(2);
+		expect(NOTES['F'].dimGroup).toBe(2);
+		expect(NOTES['Ab'].dimGroup).toBe(2);
+		expect(NOTES['B'].dimGroup).toBe(2);
+	});
+
 	it('has 12 interval labels', () => {
 		expect(INTERVAL_LABELS).toHaveLength(12);
 		expect(INTERVAL_LABELS[0]).toBe('1');

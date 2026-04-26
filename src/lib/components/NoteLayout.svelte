@@ -40,8 +40,8 @@
 	}: Props = $props();
 
 	const tabs: { mode: LayoutMode; label: string }[] = [
-		{ mode: 'fifths', label: '5ths' },
 		{ mode: 'chromatic', label: 'Chromatic' },
+		{ mode: 'fifths', label: '5ths' },
 		{ mode: 'augmented', label: 'Augmented' },
 		{ mode: 'diminished', label: 'Diminished' },
 	];

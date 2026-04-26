@@ -40,12 +40,12 @@
 
 	// Group centers: indexed by dimGroup
 	// dimGroup 0 (yellow) → top-right
-	// dimGroup 1 (red) → bottom
-	// dimGroup 2 (blue) → top-left
+	// dimGroup 1 (red) → top-left
+	// dimGroup 2 (blue) → bottom
 	const GROUP_CENTERS: { x: number; y: number }[] = [
 		{ x: 290, y: 105 },  // dimGroup 0 = top-right
-		{ x: 200, y: 330 },  // dimGroup 1 = bottom (pushed down to avoid center overlap)
-		{ x: 110, y: 105 },  // dimGroup 2 = top-left
+		{ x: 110, y: 105 },  // dimGroup 1 = top-left
+		{ x: 200, y: 330 },  // dimGroup 2 = bottom
 	];
 
 	// Compass offsets within a group, indexed by augGroup

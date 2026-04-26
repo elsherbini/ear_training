@@ -45,14 +45,19 @@
 		{ x: 75, y: 200 },   // augGroup 3 = left
 	];
 
-	// Within each cluster, 3 notes stacked vertically (indexed by dimGroup: 0=yellow top, 1=red mid, 2=blue bottom)
-	const STACK_OFFSETS: number[] = [-38, 0, 38];
+	// Within each cluster, 3 notes in downward equilateral triangle (side=60, needs ≥56 to avoid overlap with r=28)
+	// dimGroup 1 (red) = top-left, dimGroup 0 (yellow) = top-right, dimGroup 2 (blue) = bottom
+	const TRIANGLE_OFFSETS: { dx: number; dy: number }[] = [
+		{ dx: 30, dy: -17 },   // dimGroup 0 (yellow) = top-right
+		{ dx: -30, dy: -17 },  // dimGroup 1 (red) = top-left
+		{ dx: 0, dy: 35 },     // dimGroup 2 (blue) = bottom
+	];
 
 	function getNotePosition(note: NoteName): { x: number; y: number } {
 		const info = NOTES[note];
 		const cluster = CLUSTER_CENTERS[info.augGroup];
-		const yOffset = STACK_OFFSETS[info.dimGroup];
-		return { x: cluster.x, y: cluster.y + yOffset };
+		const offset = TRIANGLE_OFFSETS[info.dimGroup];
+		return { x: cluster.x + offset.dx, y: cluster.y + offset.dy };
 	}
 
 	function getNoteFill(note: NoteName): string {

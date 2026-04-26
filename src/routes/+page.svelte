@@ -33,7 +33,7 @@
 	let nameMode: 'traditional' | 'augdim' = $state('augdim');
 	let showIntervals = $state(true);
 	let showStats = $state(false);
-	let layoutMode: LayoutMode = $state('fifths');
+	let layoutMode: LayoutMode = $state('chromatic');
 	let allStats: AllStats = $state({});
 	let quizMode: 'interval' | 'melody' = $state('interval');
 

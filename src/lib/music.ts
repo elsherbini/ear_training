@@ -1,3 +1,5 @@
+import { Scale, Note } from 'tonal';
+
 export const CHROMATIC_NOTES = [
 	'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',
 ] as const;
@@ -55,6 +57,8 @@ export function getCircleForTonic(tonic: NoteName): NoteName[] {
 }
 
 export type LayoutMode = 'fifths' | 'chromatic' | 'augmented' | 'diminished';
+
+export type AccidentalMode = 'sharp' | 'flat';
 
 export function getChromaticCircle(tonic: NoteName): NoteName[] {
 	const idx = CHROMATIC_NOTES.indexOf(tonic);
@@ -212,4 +216,79 @@ export function getCadenceNotes(tonic: NoteName): CadenceNote[] {
 		{ note: v, pitch: `${v}${vOctave}` },
 		{ note: tonic, pitch: `${tonic}3` },
 	];
+}
+
+/** Map our preset names to tonal.js scale names */
+function toTonalScale(preset: string): string | null {
+	switch (preset) {
+		case 'Major': return 'major';
+		case 'Natural Minor': return 'minor';
+		case 'Harmonic Minor': return 'harmonic minor';
+		case 'Melodic Minor': return 'melodic minor';
+		default: return null;
+	}
+}
+
+/** Determine whether a preset is minor-family (uses natural minor for bias) */
+function isMinorPreset(preset: string): boolean {
+	return ['Natural Minor', 'Harmonic Minor', 'Melodic Minor'].includes(preset);
+}
+
+/**
+ * Auto-guess sharp or flat mode for a given tonic and preset.
+ * Uses the natural scale (major or natural minor) to check for sharps.
+ * No accidentals (C major, A minor) → flat.
+ */
+export function getAccidentalMode(tonic: NoteName, preset: string): AccidentalMode {
+	const biasScale = isMinorPreset(preset) ? 'minor' : 'major';
+	const degrees = Scale.degrees(`${tonic} ${biasScale}`);
+	for (let i = 1; i <= 7; i++) {
+		const note = degrees(i);
+		if (note.includes('#')) return 'sharp';
+	}
+	return 'flat';
+}
+
+/** All 12 pitch classes spelled as sharps */
+const SHARP_NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+/** All 12 pitch classes spelled as flats */
+const FLAT_NOTES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+/**
+ * Get the display name for a semitone (0-11) in traditional mode.
+ *
+ * For diatonic presets: diatonic notes come from tonal.js Scale.degrees(),
+ * chromatic notes follow the accidental mode bias.
+ *
+ * For Chromatic/Custom: all 12 notes follow the accidental mode.
+ */
+export function getTraditionalDisplayName(
+	semitone: number,
+	tonic: NoteName,
+	preset: string,
+	accidentalMode: AccidentalMode,
+): string {
+	const tonalScale = toTonalScale(preset);
+
+	if (tonalScale) {
+		// Build a map of semitone → display name from the scale
+		const degrees = Scale.degrees(`${tonic} ${tonalScale}`);
+		const diatonicMap = new Map<number, string>();
+		for (let i = 1; i <= 7; i++) {
+			const noteName = degrees(i);
+			if (noteName) {
+				const chroma = Note.chroma(noteName);
+				if (chroma !== undefined && chroma !== null) {
+					diatonicMap.set(chroma, noteName);
+				}
+			}
+		}
+
+		// If this semitone is diatonic, use the scale's spelling
+		const diatonic = diatonicMap.get(semitone);
+		if (diatonic) return diatonic;
+	}
+
+	// Chromatic fallback: use sharp or flat spelling
+	return accidentalMode === 'sharp' ? SHARP_NOTES[semitone] : FLAT_NOTES[semitone];
 }

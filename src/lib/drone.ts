@@ -39,7 +39,7 @@ export const DEFAULT_PARAMS: DroneParams = {
 		harmonicity: 1.5,
 		modulationIndex: 5,
 		lfoRate: 0.1,
-		lfoDepth: 0.5,
+		lfoDepth: 0.85,
 		lfoSpread: 0.4,
 		driftAmount: 0.3,
 	},
@@ -47,9 +47,9 @@ export const DEFAULT_PARAMS: DroneParams = {
 		harmonicity: 2,
 		modulationIndex: 3,
 		lfoRate: 0.08,
-		lfoDepth: 0.5,
-		lfoSpread: 0.4,
-		driftAmount: 0.3,
+		lfoDepth: 0.75,
+		lfoSpread: 0.66,
+		driftAmount: 0.25,
 	},
 	voiceGains: [1, 1, 1, 1, 1, 1, 1, 1],
 	effects: {
@@ -90,8 +90,9 @@ export class DroneEngine {
 	private amVoices: Voice[] = [];
 	private fmVoices: Voice[] = [];
 	private masterGain: Tone.Gain | null = null;
+	private highpass: Tone.Filter | null = null;
 	private compressor: Tone.Compressor | null = null;
-	private delay: Tone.FeedbackDelay | null = null;
+	private delay: Tone.PingPongDelay | null = null;
 	private reverb: Tone.Reverb | null = null;
 	private _playing = false;
 
@@ -115,11 +116,17 @@ export class DroneEngine {
 
 		// Effects chain
 		this.masterGain = new Tone.Gain(masterVolume);
+		this.highpass = new Tone.Filter({
+			frequency: 3000,
+			type: 'lowpass',
+			rolloff: -12,
+			Q: 0.5,
+		});
 		this.compressor = new Tone.Compressor({
 			threshold: effects.compressorThreshold,
 			ratio: effects.compressorRatio,
 		});
-		this.delay = new Tone.FeedbackDelay({
+		this.delay = new Tone.PingPongDelay({
 			delayTime: effects.delayTime,
 			feedback: effects.delayFeedback,
 			wet: effects.delayWet,
@@ -128,7 +135,7 @@ export class DroneEngine {
 			decay: effects.reverbDecay,
 			wet: effects.reverbWet,
 		});
-		this.masterGain.chain(this.compressor, this.delay, this.reverb, Tone.getDestination());
+		this.masterGain.chain(this.highpass, this.compressor, this.delay, this.reverb, Tone.getDestination());
 
 		// AM voices
 		const amRates = computeSpreadRates(am.lfoRate, am.lfoSpread, octaves.length);
@@ -219,10 +226,12 @@ export class DroneEngine {
 		this.reverb?.dispose();
 		this.delay?.dispose();
 		this.compressor?.dispose();
+		this.highpass?.dispose();
 		this.masterGain?.dispose();
 		this.reverb = null;
 		this.delay = null;
 		this.compressor = null;
+		this.highpass = null;
 		this.masterGain = null;
 	}
 

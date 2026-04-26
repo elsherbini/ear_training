@@ -135,7 +135,10 @@
 </script>
 
 <div class="min-h-screen bg-gray-950 text-gray-100 p-6">
-	<h1 class="text-2xl font-bold mb-6">Drone Test Page</h1>
+	<div class="flex items-center gap-4 mb-6">
+		<a href="/" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium">&larr; Back to Quiz</a>
+		<h1 class="text-2xl font-bold">Drone Test Page</h1>
+	</div>
 
 	<!-- Top Bar -->
 	<div class="flex flex-wrap items-center gap-4 mb-8 p-4 bg-gray-900 rounded-lg">

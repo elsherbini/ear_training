@@ -60,6 +60,7 @@
 	let userPick: NoteName | null = $state(null);
 	let correctNote: NoteName | null = $state(null);
 	let cadenceNote: NoteName | null = $state(null);
+	let noteHistory: { note: NoteName; octave: number }[] = $state([]);
 
 	// Derived
 	const circleNotes = $derived(
@@ -107,6 +108,7 @@
 			},
 		);
 		cadenceNote = null;
+		noteHistory = [];
 
 		playNextNote();
 	}
@@ -128,6 +130,7 @@
 		melodyPitches = [];
 		melodyIndex = 0;
 		melodyResults = [];
+		noteHistory = [];
 	}
 
 	async function playNextNote() {
@@ -143,9 +146,10 @@
 			await quizAudio.playMelody(melodyPitches);
 			quizState = 'awaiting_answer';
 		} else {
-			const target = pickRandomTarget(tonic, enabledSemitones);
+			const target = pickRandomTarget(tonic, enabledSemitones, noteHistory.at(-1), noteHistory);
 			targetNote = target.note;
 			targetPitch = `${target.note}${target.octave}`;
+			noteHistory = [...noteHistory, target].slice(-4);
 			quizAudio.playNote(targetPitch);
 			quizState = 'awaiting_answer';
 		}
@@ -226,6 +230,7 @@
 				clearTimeout(feedbackTimeout);
 				feedbackTimeout = null;
 			}
+			noteHistory = [];
 			playNextNote();
 		}
 	}
@@ -259,6 +264,7 @@
 			},
 		);
 		cadenceNote = null;
+		noteHistory = [];
 
 		// Resume quiz
 		playNextNote();
@@ -270,6 +276,7 @@
 
 	function handleSemitonesChange(newSemitones: number[]) {
 		enabledSemitones = newSemitones;
+		noteHistory = [];
 	}
 
 	function handleNameModeChange(mode: 'traditional' | 'augdim') {

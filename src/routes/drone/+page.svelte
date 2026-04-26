@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { DroneEngine, DEFAULT_PARAMS } from '$lib/drone';
 
+	import { base } from '$app/paths';
 	const KEYS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
 	const engine = new DroneEngine();
@@ -136,7 +137,7 @@
 
 <div class="min-h-screen bg-gray-950 text-gray-100 p-6">
 	<div class="flex items-center gap-4 mb-6">
-		<a href="/" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium">&larr; Back to Quiz</a>
+		<a href="{base}/" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium">&larr; Back to Quiz</a>
 		<h1 class="text-2xl font-bold">Drone Test Page</h1>
 	</div>
 

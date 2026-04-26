@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import { CHROMATIC_NOTES, NOTES, PRESETS, INTERVAL_LABELS, matchPreset, type NoteName } from '$lib/music';
 
 	interface Props {
@@ -127,5 +128,5 @@
 	</label>
 
 	<!-- Drone link -->
-	<a href="/drone" class="ml-auto text-2xl hover:scale-110 transition-transform" title="Drone">🛸</a>
+	<a href="{base}/drone" class="ml-auto text-2xl hover:scale-110 transition-transform" title="Drone">🛸</a>
 </div>

@@ -112,10 +112,11 @@
 				}
 			}}
 			class="px-2 py-1 rounded {nameMode === 'traditional'
-				? 'bg-blue-600 font-bold'
+				? 'bg-blue-600'
 				: 'bg-gray-800 text-gray-400 hover:bg-gray-700'}"
 		>
-			Traditional {nameMode === 'traditional' ? (accidentalMode === 'sharp' ? '\u266F' : '\u266D') : ''}
+			<span class={nameMode === 'traditional' && accidentalMode === 'flat' ? 'font-bold' : 'text-gray-400'}>♭</span>
+			<span class={nameMode === 'traditional' && accidentalMode === 'sharp' ? 'font-bold' : 'text-gray-400'}>♯</span>
 		</button>
 		<button
 			onclick={() => onNameModeChange('augdim')}

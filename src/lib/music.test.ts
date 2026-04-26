@@ -13,7 +13,10 @@ import {
 	matchPreset,
 	pickRandomTarget,
 	getCadenceNotes,
+	getAccidentalMode,
+	getTraditionalDisplayName,
 	type NoteName,
+	type AccidentalMode,
 } from './music';
 
 describe('constants', () => {
@@ -370,5 +373,104 @@ describe('getChromaticCircle', () => {
 		expect(circle[0]).toBe('F');
 		expect(circle[1]).toBe('Gb');
 		expect(circle[11]).toBe('E');
+	});
+});
+
+describe('getAccidentalMode', () => {
+	it('returns flat for C major (no accidentals)', () => {
+		expect(getAccidentalMode('C', 'Major')).toBe('flat');
+	});
+
+	it('returns sharp for G major', () => {
+		expect(getAccidentalMode('G', 'Major')).toBe('sharp');
+	});
+
+	it('returns sharp for D major', () => {
+		expect(getAccidentalMode('D', 'Major')).toBe('sharp');
+	});
+
+	it('returns flat for F major', () => {
+		expect(getAccidentalMode('F', 'Major')).toBe('flat');
+	});
+
+	it('returns flat for Bb major', () => {
+		expect(getAccidentalMode('Bb', 'Major')).toBe('flat');
+	});
+
+	it('returns flat for A minor (no accidentals = flat)', () => {
+		expect(getAccidentalMode('A', 'Natural Minor')).toBe('flat');
+	});
+
+	it('returns sharp for E minor', () => {
+		expect(getAccidentalMode('E', 'Natural Minor')).toBe('sharp');
+	});
+
+	it('returns flat for D minor', () => {
+		expect(getAccidentalMode('D', 'Natural Minor')).toBe('flat');
+	});
+
+	it('returns flat for Chromatic preset (falls back to major)', () => {
+		expect(getAccidentalMode('Bb', 'Chromatic')).toBe('flat');
+	});
+
+	it('returns sharp for Chromatic with sharp tonic', () => {
+		expect(getAccidentalMode('G', 'Chromatic')).toBe('sharp');
+	});
+
+	it('returns sharp for Harmonic Minor with sharp natural minor', () => {
+		expect(getAccidentalMode('E', 'Harmonic Minor')).toBe('sharp');
+	});
+
+	it('returns flat for Melodic Minor with flat natural minor', () => {
+		expect(getAccidentalMode('D', 'Melodic Minor')).toBe('flat');
+	});
+});
+
+describe('getTraditionalDisplayName', () => {
+	it('returns natural note names unchanged', () => {
+		expect(getTraditionalDisplayName(0, 'C', 'Major', 'flat')).toBe('C');
+		expect(getTraditionalDisplayName(2, 'C', 'Major', 'flat')).toBe('D');
+	});
+
+	it('returns flat names in flat mode for C major chromatic notes', () => {
+		expect(getTraditionalDisplayName(1, 'C', 'Major', 'flat')).toBe('Db');
+		expect(getTraditionalDisplayName(3, 'C', 'Major', 'flat')).toBe('Eb');
+		expect(getTraditionalDisplayName(6, 'C', 'Major', 'flat')).toBe('Gb');
+	});
+
+	it('returns sharp names for diatonic notes in G major', () => {
+		expect(getTraditionalDisplayName(6, 'G', 'Major', 'sharp')).toBe('F#');
+	});
+
+	it('returns sharp names for chromatic notes in a sharp key', () => {
+		expect(getTraditionalDisplayName(8, 'G', 'Major', 'sharp')).toBe('G#');
+	});
+
+	it('returns correct diatonic names for Gb major', () => {
+		expect(getTraditionalDisplayName(6, 'Gb', 'Major', 'flat')).toBe('Gb');
+		expect(getTraditionalDisplayName(11, 'Gb', 'Major', 'flat')).toBe('Cb');
+		expect(getTraditionalDisplayName(5, 'Gb', 'Major', 'flat')).toBe('F');
+	});
+
+	it('handles G harmonic minor: diatonic F# in a flat key', () => {
+		expect(getTraditionalDisplayName(6, 'G', 'Harmonic Minor', 'flat')).toBe('F#');
+	});
+
+	it('chromatic notes in G harmonic minor follow flat bias', () => {
+		expect(getTraditionalDisplayName(8, 'G', 'Harmonic Minor', 'flat')).toBe('Ab');
+	});
+
+	it('returns all 12 names for Chromatic preset in flat mode', () => {
+		const names = Array.from({ length: 12 }, (_, i) =>
+			getTraditionalDisplayName(i, 'C', 'Chromatic', 'flat'),
+		);
+		expect(names).toEqual(['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']);
+	});
+
+	it('returns all 12 names for Chromatic preset in sharp mode', () => {
+		const names = Array.from({ length: 12 }, (_, i) =>
+			getTraditionalDisplayName(i, 'C', 'Chromatic', 'sharp'),
+		);
+		expect(names).toEqual(['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']);
 	});
 });

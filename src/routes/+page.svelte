@@ -6,8 +6,10 @@
 	import {
 		type NoteName,
 		type MelodyNote,
+		type LayoutMode,
 		PRESETS,
 		getCircleForTonic,
+		getChromaticCircle,
 		pickRandomTarget,
 		generateMelody,
 		getCadenceNotes,
@@ -15,7 +17,7 @@
 		matchPreset,
 	} from '$lib/music';
 	import { loadStats, saveStats, recordAnswer, clearStatsForKey, getKeyStats, type AllStats } from '$lib/stats';
-	import NoteCircle from '$lib/components/NoteCircle.svelte';
+	import NoteLayout from '$lib/components/NoteLayout.svelte';
 	import TopBar from '$lib/components/TopBar.svelte';
 
 	// Quiz state
@@ -31,6 +33,7 @@
 	let nameMode: 'traditional' | 'augdim' = $state('augdim');
 	let showIntervals = $state(true);
 	let showStats = $state(false);
+	let layoutMode: LayoutMode = $state('fifths');
 	let allStats: AllStats = $state({});
 	let quizMode: 'interval' | 'melody' = $state('interval');
 
@@ -59,7 +62,9 @@
 	let cadenceNote: NoteName | null = $state(null);
 
 	// Derived
-	const circleNotes = $derived(getCircleForTonic(tonic));
+	const circleNotes = $derived(
+		layoutMode === 'chromatic' ? getChromaticCircle(tonic) : getCircleForTonic(tonic),
+	);
 	const keyStats = $derived(getKeyStats(allStats, tonic));
 	const melodyDots = $derived(
 		quizMode === 'melody' && melodyResults.length > 0
@@ -275,6 +280,10 @@
 		showIntervals = show;
 	}
 
+	function handleLayoutChange(mode: LayoutMode) {
+		layoutMode = mode;
+	}
+
 	onDestroy(() => {
 		if (feedbackTimeout) clearTimeout(feedbackTimeout);
 		drone.dispose();
@@ -347,7 +356,8 @@
 		</div>
 
 		<div class="col-span-6">
-			<NoteCircle
+			<NoteLayout
+				{layoutMode}
 				notes={circleNotes}
 				{tonic}
 				{nameMode}
@@ -360,6 +370,7 @@
 				{cadenceNote}
 				{melodyDots}
 				onNoteClick={handleNoteClick}
+				onLayoutChange={handleLayoutChange}
 			/>
 		</div>
 
@@ -368,7 +379,8 @@
 
 	<!-- Small screens: circle above, buttons below -->
 	<div class="mt-6 md:hidden flex flex-col items-center">
-		<NoteCircle
+		<NoteLayout
+			{layoutMode}
 			notes={circleNotes}
 			{tonic}
 			{nameMode}
@@ -381,6 +393,7 @@
 			{cadenceNote}
 			{melodyDots}
 			onNoteClick={handleNoteClick}
+			onLayoutChange={handleLayoutChange}
 		/>
 
 		<div class="mt-4 flex gap-3">

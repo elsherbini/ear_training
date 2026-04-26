@@ -184,6 +184,7 @@
 			fill={getNoteTextFill(note)}
 			font-size="20"
 			font-weight="bold"
+			opacity={enabled ? 1 : 0.25}
 			class="pointer-events-none select-none"
 		>
 			{getDisplayName(note)}

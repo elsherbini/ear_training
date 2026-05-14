@@ -41,12 +41,12 @@
 	const CENTER_R = 50;
 	const NOTE_R = 28;
 
-	// Cluster centers: top, right, bottom, left (indexed by augGroup)
+	// Cluster centers: top, left, bottom, right (indexed by augGroup)
 	const CLUSTER_CENTERS: { x: number; y: number }[] = [
 		{ x: 200, y: 75 },   // augGroup 0 = top
-		{ x: 325, y: 200 },  // augGroup 1 = right
+		{ x: 75, y: 200 },   // augGroup 1 = left
 		{ x: 200, y: 325 },  // augGroup 2 = bottom
-		{ x: 75, y: 200 },   // augGroup 3 = left
+		{ x: 325, y: 200 },  // augGroup 3 = right
 	];
 
 	// Within each cluster, 3 notes in downward equilateral triangle (side=60, needs ≥56 to avoid overlap with r=28)

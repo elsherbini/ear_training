@@ -50,11 +50,11 @@
 	];
 
 	// Within each cluster, 3 notes in downward equilateral triangle (side=60, needs ≥56 to avoid overlap with r=28)
-	// dimGroup 1 (red) = top-left, dimGroup 0 (yellow) = top-right, dimGroup 2 (blue) = bottom
+	// dimGroup 0 (yellow) = top-right, dimGroup 1 (red) = bottom, dimGroup 2 (blue) = top-left
 	const TRIANGLE_OFFSETS: { dx: number; dy: number }[] = [
 		{ dx: 30, dy: -17 },   // dimGroup 0 (yellow) = top-right
-		{ dx: -30, dy: -17 },  // dimGroup 1 (red) = top-left
-		{ dx: 0, dy: 35 },     // dimGroup 2 (blue) = bottom
+		{ dx: 0, dy: 35 },     // dimGroup 1 (red) = bottom
+		{ dx: -30, dy: -17 },  // dimGroup 2 (blue) = top-left
 	];
 
 	function getNotePosition(note: NoteName): { x: number; y: number } {

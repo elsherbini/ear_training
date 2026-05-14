@@ -53,12 +53,12 @@
 	];
 
 	// Compass offsets within a group, indexed by augGroup
-	// augGroup 0 = top, 1 = right, 2 = bottom, 3 = left
+	// augGroup 0 = top, 1 = left, 2 = bottom, 3 = right
 	const COMPASS_OFFSETS: { dx: number; dy: number }[] = [
 		{ dx: 0, dy: -COMPASS_R },   // top
-		{ dx: COMPASS_R, dy: 0 },    // right
-		{ dx: 0, dy: COMPASS_R },    // bottom
 		{ dx: -COMPASS_R, dy: 0 },   // left
+		{ dx: 0, dy: COMPASS_R },    // bottom
+		{ dx: COMPASS_R, dy: 0 },    // right
 	];
 
 	function getNotePosition(note: NoteName): { x: number; y: number } {
